@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            background: #f1f5f9;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f172a;
+            padding: 15px 30px;
+            color: white;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #0f172a;
+            color: white;
+        }
+
+        button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .logout {
+            background: #ef4444;
+        }
+
+        .voltar {
+            background: #3b82f6;
+        }
+
+        .novo {
+            background: #22c55e;
+            text-decoration: none;
+            display: inline-block;
+            padding: 10px 14px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .topo-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div style="font-size:22px; font-weight:bold;">
+        📦 Rtech ERP
+    </div>
+
+    <div style="display:flex; gap:15px; align-items:center;">
+        <a href="/pedidos/">
+            <button type="button" class="voltar">Pedidos</button>
+        </a>
+
+        <span>👤 {{ request.cookies.get('user') }}</span>
+
+        <a href="/logout">
+            <button type="button" class="logout">Sair</button>
+        </a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <div class="topo-card">
+            <h3>Usuários Cadastrados</h3>
+            <a class="novo" href="/usuarios/novo">+ Novo Usuário</a>
+        </div>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+            </tr>
+
+            {% if usuarios %}
+                {% for u in usuarios %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.username }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" class="vazio">Nenhum usuário cadastrado.</td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
