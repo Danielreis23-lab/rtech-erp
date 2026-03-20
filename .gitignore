@@ -1,7 +1,8 @@
-venv/
+7venv/
 _pychache_/
 *.pyc
 pedidos.db
 .env
 .idea/
 .vscode/
+routers/_pychache_/
