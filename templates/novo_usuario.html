@@ -6,25 +6,41 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding-top: 80px;
+            box-sizing: border-box;
         }
 
         .container {
             background: white;
-            padding: 30px;
-            border-radius: 8px;
-            width: 350px;
+            padding: 40px;
+            border-radius: 20px;
+            width: 700px;
+            height: 450px;
+            max-width: 90%;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
         h2 {
             text-align: center;
             margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        p em {
+            font-size: 14px;
+            font-style: normal;
+            font-weight: normal;
+            color: #666;
         }
 
         input {
@@ -44,6 +60,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 15px;
         }
 
         button:hover {
@@ -60,40 +77,175 @@
             font-size: 14px;
         }
 
+        .mensagem-js {
+            display: none;
+            background-color: #fff4d6;
+            color: #8a6300;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
         .voltar {
-            margin-top: 10px;
+            display: block;
+            margin-top: 12px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-voltar {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #6b7280;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            box-sizing: border-box;
             text-align: center;
         }
 
-        .voltar a {
-            text-decoration: none;
-            color: #2d89ef;
+        .btn-voltar:hover {
+            background-color: #4b5563;
         }
 
-        .voltar a:hover {
-            text-decoration: underline;
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #0139b4;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .logout {
+            background: #ef4444;
+            padding: 10px 14px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logout:hover {
+            background: #dc2626;
+        }
+
+        .input-senha {
+            position: relative;
+        }
+
+        .input-senha input {
+            padding-right: 50px;
+        }
+
+        .toggle-senha {
+            position: absolute;
+            right: 14px;
+            top: 42%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            user-select: none;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Criar Novo Usuário</h2>
+    <div class="navbar">
+        <div class="logo">📦 Rtech ERP</div>
 
-    {% if error %}
-        <div class="erro">{{ error }}</div>
-    {% endif %}
-
-    <form method="post" action="/usuarios/novo">
-        <input type="text" name="username" placeholder="Usuário" required>
-        <input type="password" name="password" placeholder="Senha" required>
-        <button type="submit">Criar Usuário</button>
-    </form>
-
-    <div class="voltar">
-        <a href="/usuarios/">Voltar para lista</a>
+        <div class="navbar-right">
+            <span>👤 {{ request.cookies.get('user') }}</span>
+            <a class="logout" href="/logout">Sair</a>
+        </div>
     </div>
-</div>
+
+    <div class="container">
+        <h2>Cadastrar Novo Usuário</h2>
+        <hr style="border: none; height: 2px; background-color: #3b82f6; margin: 20px 0;">
+
+        {% if error %}
+            <div class="erro">{{ error }}</div>
+        {% endif %}
+
+        <div id="mensagemJs" class="mensagem-js"></div>
+
+        <form id="formLogin" method="post" action="/usuarios/novo">
+            <p>Nome de Usuário: <em>Digite o nome do usuário</em></p>
+            <input id="username" type="text" name="username" placeholder="Usuário" required>
+
+            <p>Senha: <em>Digite a senha</em></p>
+            <div class="input-senha">
+                <input id="password" type="password" name="password" placeholder="Senha" required>
+                <span id="toggleSenha" class="toggle-senha">🔓</span>
+            </div>
+
+            <button type="submit">Criar Usuário</button>
+        </form>
+
+        <a class="btn-voltar voltar" href="/usuarios/">VOLTAR</a>
+    </div>
+
+    <script>
+        const form = document.getElementById("formLogin");
+        const username = document.getElementById("username");
+        const password = document.getElementById("password");
+        const mensagemJs = document.getElementById("mensagemJs");
+        const toggleSenha = document.getElementById("toggleSenha");
+
+        function mostrarMensagem(texto) {
+            mensagemJs.style.display = "block";
+            mensagemJs.textContent = texto;
+        }
+
+        function esconderMensagem() {
+            mensagemJs.style.display = "none";
+            mensagemJs.textContent = "";
+        }
+
+        form.addEventListener("submit", function (event) {
+            esconderMensagem();
+
+            if (username.value.trim() === "" || password.value.trim() === "") {
+                event.preventDefault();
+                mostrarMensagem("Preencha todos os campos.");
+                return;
+            }
+
+            if (password.value.trim().length < 6) {
+                event.preventDefault();
+                mostrarMensagem("A senha deve ter pelo menos 6 caracteres.");
+                return;
+            }
+
+            mostrarMensagem("Enviando cadastro...");
+        });
+
+        toggleSenha.addEventListener("click", function () {
+            const senhaVisivel = password.type === "text";
+            password.type = senhaVisivel ? "password" : "text";
+            toggleSenha.textContent = senhaVisivel ? "🔓" : "🔒";
+        });
+    </script>
 
 </body>
 </html>

@@ -1,79 +1,308 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Rtech ERP</title>
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f1f5f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        * {
             margin: 0;
-        }
-
-        .box {
-            background: white;
-            width: 350px;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #0f172a;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 5px;
+            padding: 0;
             box-sizing: border-box;
         }
 
-        button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            background: #2563eb;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
+        :root {
+            --azul-escuro: #0139b4;
+            --azul-medio: #1171df;
+            --azul-claro: #77b7ef;
+            --azul-destaque: #0419a7;
+            --branco: #ffffff;
+            --cinza-borda: #d1d5db;
+            --cinza-fundo: #f9fafb;
+            --erro-bg: #fee2e2;
+            --erro-texto: #b91c1c;
+            --info-bg: #dbeafe;
+            --info-texto: #1d4ed8;
+            --sombra: 0 20px 50px rgba(0, 0, 0, 0.15);
+            --radius: 20px;
+            --transition: 0.3s ease;
         }
 
-        button:hover {
-            background: #1d4ed8;
+        body {
+            font-family: "Segoe UI", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(90deg, var(--azul-escuro), var(--azul-medio), var(--azul-claro));
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 950px;
+            min-height: 500px;
+            display: flex;
+            overflow: hidden;
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: var(--sombra);
+        }
+
+        .banner {
+            flex: 1;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(135deg, #0215ef, #77b7ef);
+            color: var(--branco);
+            position: relative;
+        }
+
+        .logo-texto {
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .banner h1 {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        .banner p {
+            font-size: 16px;
+            max-width: 360px;
+            line-height: 1.6;
+        }
+
+        .box {
+            flex: 1;
+            padding: 50px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #77b7ef, #1171df);
+        }
+
+        .form-area {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .titulo-login {
+            text-align: center;
+            color: var(--branco);
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .erro,
+        .mensagem-js {
+            display: none;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 14px;
         }
 
         .erro {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            text-align: center;
+            display: block;
+            background: var(--erro-bg);
+            color: var(--erro-texto);
+        }
+
+        .mensagem-js {
+            background: var(--info-bg);
+            color: var(--info-texto);
+        }
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        .campo input {
+            width: 100%;
+            padding: 15px 16px;
+            border: 1px solid var(--cinza-borda);
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            background: var(--cinza-fundo);
+            transition: var(--transition);
+        }
+
+        .campo input:focus {
+            border-color: var(--azul-destaque);
+            background: rgba(23, 64, 188, 0.08);
+        }
+
+        .input-senha {
+            position: relative;
+        }
+
+        .input-senha input {
+            padding-right: 50px;
+        }
+
+        .toggle-senha {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            user-select: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(4, 25, 167, 0.75);
+            color: var(--branco);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 245, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .banner,
+            .box {
+                padding: 35px 25px;
+            }
+
+            .logo-texto {
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .banner h1 {
+                font-size: 36px;
+            }
+
+            .banner p {
+                max-width: 100%;
+            }
+
+            .titulo-login {
+                font-size: 38px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>Login - Rtech ERP</h2>
+    <div class="login-container">
+        <section class="banner">
+            <div class="logo-texto">Rtech</div>
+            <h1>Bem-vindo!</h1>
+            <p>
+                Acesse sua conta para continuar no sistema Rtech ERP com praticidade e segurança.
+            </p>
+        </section>
 
-        {% if error %}
-            <div class="erro">{{ error }}</div>
-        {% endif %}
+        <section class="box">
+            <div class="form-area">
+                <h2 class="titulo-login">Login</h2>
 
-        <form method="post" action="/login">
-            <input type="text" name="username" placeholder="Usuário" required>
-            <input type="password" name="password" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
-        </form>
+                {% if error %}
+                    <div class="erro">{{ error }}</div>
+                {% endif %}
+
+                <form id="formLogin" method="post" action="/login">
+                    <div id="mensagemJs" class="mensagem-js"></div>
+
+                    <div class="campo">
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Usuário"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo input-senha">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Senha"
+                            required
+                        >
+                        <span id="toggleSenha" class="toggle-senha">👁️</span>
+                    </div>
+
+                    <button type="submit" class="btn-login">Entrar</button>
+                </form>
+                <a href="">Esqueceu a senha</a>
+                <br>
+                <a href="">Cria cadastro</a>
+            </div>
+        </section>
     </div>
+
+    <script>
+        const form = document.getElementById("formLogin");
+        const username = document.getElementById("username");
+        const password = document.getElementById("password");
+        const mensagemJs = document.getElementById("mensagemJs");
+        const toggleSenha = document.getElementById("toggleSenha");
+
+        function mostrarMensagem(texto) {
+            mensagemJs.style.display = "block";
+            mensagemJs.textContent = texto;
+        }
+
+        function esconderMensagem() {
+            mensagemJs.style.display = "none";
+            mensagemJs.textContent = "";
+        }
+
+        form.addEventListener("submit", function (event) {
+            esconderMensagem();
+
+            if (username.value.trim() === "" || password.value.trim() === "") {
+                event.preventDefault();
+                mostrarMensagem("Preencha todos os campos.");
+                return;
+            }
+
+            if (password.value.trim().length < 4) {
+                event.preventDefault();
+                mostrarMensagem("A senha deve ter pelo menos 4 caracteres.");
+                return;
+            }
+
+            mostrarMensagem("Enviando login...");
+        });
+
+        toggleSenha.addEventListener("click", function () {
+            const senhaVisivel = password.type === "text";
+            password.type = senhaVisivel ? "password" : "text";
+            toggleSenha.textContent = senhaVisivel ? "👁️" : "🙈";
+        });
+    </script>
 </body>
 </html>
