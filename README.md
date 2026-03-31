@@ -13,7 +13,7 @@ produtos e controle de usuários
 - Controle de status dos pedidos 
 - Painel com o valor pendente e faturado 
 - 2 gráficos para acompanhar o
-  faturamento e vendo por cliente 
+  faturamento e venda por cliente 
 
 ## Tecnologias
 - FastAPI
