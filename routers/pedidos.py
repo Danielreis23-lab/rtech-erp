@@ -110,7 +110,7 @@ def criar_pedido(
     return RedirectResponse("/pedidos/", status_code=303)
 
 
-@router.get("/entregar/{pedido_id}")
+@router.post("/entregar/{pedido_id}")
 def entregar(pedido_id: int, db: Session = Depends(get_db)):
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
 
@@ -120,7 +120,7 @@ def entregar(pedido_id: int, db: Session = Depends(get_db)):
 
     return RedirectResponse("/pedidos/", status_code=303)
 
-@router.get("/cancelar/{pedido_id}")
+@router.post("/cancelar/{pedido_id}")
 def cancelar(pedido_id: int, db: Session = Depends(get_db)):    
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
 
