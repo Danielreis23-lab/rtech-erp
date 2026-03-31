@@ -28,6 +28,9 @@ def pagina_pedidos(request: Request, db: Session = Depends(get_db)):
     grafico_labels = [p.cliente for p in pedidos]
     grafico_values = [(p.total or 0) for p in pedidos]
 
+    faturamento_labels = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho']
+    faturamento_values = [5000, 7000, 6000, 8000, 7500, 9000]
+
     return templates.TemplateResponse("pedidos.html", {
         "request": request,
         "produtos": produtos,
@@ -38,7 +41,9 @@ def pagina_pedidos(request: Request, db: Session = Depends(get_db)):
         "entregues": entregues,
         "pendentes": pendentes,
         "grafico_labels": grafico_labels,
-        "grafico_values": grafico_values
+        "grafico_values": grafico_values,
+        "faturamento_labels": faturamento_labels,
+        "faturamento_values": faturamento_values
     })
 
 
@@ -109,8 +114,19 @@ def criar_pedido(
 def entregar(pedido_id: int, db: Session = Depends(get_db)):
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
 
-    if pedido and pedido.status != "Entregue":
+    if pedido and pedido.status != "Entregue" or pedido.status == "Cancelado":
         pedido.status = "Entregue"
         db.commit()
 
     return RedirectResponse("/pedidos/", status_code=303)
+
+@router.get("/cancelar/{pedido_id}")
+def cancelar(pedido_id: int, db: Session = Depends(get_db)):    
+    pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
+
+    if pedido and pedido.status != "Entregue" and pedido.status != "Cancelado": # se o pedido não estiver entregue ou cancelado, ele pode ser cancelado
+        pedido.status = "Cancelado"
+        db.commit()
+
+    return RedirectResponse("/pedidos/", status_code=303)
+
