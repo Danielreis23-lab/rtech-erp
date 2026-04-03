@@ -14,7 +14,17 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    erro = request.cookies.get("erro")
+
+    response = templates.TemplateResponse(
+        "login.html",
+        {"request": request, "error": erro}
+    )
+
+    if erro:
+        response.delete_cookie("erro")
+
+    return response
 
 
 def authenticate_user(db: Session, username: str, password: str):
@@ -41,10 +51,13 @@ def login(
     user = authenticate_user(db, username, password)
 
     if not user:
-        return templates.TemplateResponse(
-            "login.html",
-            {"request": request, "error": "Usuário ou senha inválidos"}
+        response = RedirectResponse("/login", status_code=303)
+        response.set_cookie(
+            key="erro",
+            value="Usuário ou senha inválidos",
+            max_age=5
         )
+        return response
 
     response = RedirectResponse("/pedidos/", status_code=303)
     response.set_cookie(
@@ -60,4 +73,5 @@ def login(
 def logout():
     response = RedirectResponse("/login", status_code=303)
     response.delete_cookie("user")
+    response.delete_cookie("erro")
     return response
