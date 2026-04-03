@@ -3,7 +3,7 @@
 Sistemas simples de ERP desenvolvido 
 com FastAPI,  SOLAlchemy, Jinja2 e 
 SQLLite para gerenciamento de pedidos,
-produtos e usuários
+produtos e controle de usuários 
 
 ## Funcionalidades
 - Cadastro de usuário
@@ -11,7 +11,9 @@ produtos e usuários
 - Cadastro de produto
 - Criação de pedidos 
 - Controle de status dos pedidos 
-- Painel com valor pendente e faturado
+- Painel com o valor pendente e faturado 
+- 2 gráficos para acompanhar o
+  faturamento e venda por cliente 
 
 ## Tecnologias
 - FastAPI
@@ -21,6 +23,7 @@ produtos e usuários
 - Python
 - HTML
 - CSS
+- Javascript 
 
 ## Período
 Março de 2026
