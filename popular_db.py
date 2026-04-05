@@ -1,13 +1,21 @@
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import Produto, Pedido
+from models import Produto, Pedido, User
 from datetime import datetime
+from passlib.context import CryptContext
 
 db: Session = SessionLocal()
 
-# ─────────────────────────────────────────
-# PRODUTOS — Loja de Roupas & Tênis
-# ─────────────────────────────────────────
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+ 
+ 
+usuario_admin = User(
+    username="admin12",
+    password=pwd_context.hash("741963"),
+    role="admin"
+)
+
+
 produtos = [
     # Tênis
     Produto(nome="Tênis Nike Air Max 90",        estoque=25, valor=699.90),
@@ -42,15 +50,9 @@ produtos = [
     Produto(nome="Cinto Couro Marrom",           estoque=30, valor=69.90),
 ]
 
-# ─────────────────────────────────────────
-# PEDIDOS — Histórico de Vendas
-# ─────────────────────────────────────────
+
 pedidos = [
-    # Pedidos entregues — distribuídos entre Nov/2025 e Abr/2026 para popular o gráfico
-    Pedido(cliente="Lucas Oliveira",    produto="Tênis Nike Air Max 90",        quantidade=1, total=699.90,  status="Entregue", data_criacao=datetime(2025, 11, 3)),
-    Pedido(cliente="Fernanda Costa",   produto="Blusa Cropped Feminina M",      quantidade=2, total=159.80,  status="Entregue", data_criacao=datetime(2025, 11, 18)),
-    Pedido(cliente="Rafael Souza",     produto="Calça Moletom Cinza M",         quantidade=1, total=129.90,  status="Entregue", data_criacao=datetime(2025, 12, 5)),
-    Pedido(cliente="Juliana Mendes",   produto="Tênis Vans Old Skool",          quantidade=1, total=379.90,  status="Entregue", data_criacao=datetime(2025, 12, 20)),
+    
     Pedido(cliente="Bruno Lima",       produto="Camiseta Básica Preta M",       quantidade=3, total=179.70,  status="Entregue", data_criacao=datetime(2026, 1, 8)),
     Pedido(cliente="Camila Torres",    produto="Jaqueta Jeans Feminina P",      quantidade=1, total=259.90,  status="Entregue", data_criacao=datetime(2026, 2, 14)),
     Pedido(cliente="Diego Alves",      produto="Tênis Adidas Ultraboost 22",    quantidade=1, total=849.90,  status="Entregue", data_criacao=datetime(2026, 2, 27)),

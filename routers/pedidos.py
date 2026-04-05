@@ -2,18 +2,11 @@ from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from collections import defaultdict
 from deps import get_db
 import models
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
 templates = Jinja2Templates(directory="templates")
-
-MESES_PT = {
-    1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
-    5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
-    9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
-}
 
 
 @router.get("/")
@@ -26,31 +19,28 @@ def pagina_pedidos(request: Request, db: Session = Depends(get_db)):
     produtos = db.query(models.Produto).all()
     pedidos = db.query(models.Pedido).all()
 
-    valor_pendente = sum((p.total or 0) for p in pedidos if p.status == "Pendente")
+    valor_pendente = sum((p.total or 0) for p in pedidos if p.status in ("Pendente", "Em trânsito"))
     total_faturado = sum((p.total or 0) for p in pedidos if p.status == "Entregue")
     total_pedidos = len(pedidos)
     entregues = len([p for p in pedidos if p.status == "Entregue"])
     pendentes = len([p for p in pedidos if p.status == "Pendente"])
+    em_transito = len([p for p in pedidos if p.status == "Em trânsito"])
 
     grafico_labels = [p.cliente for p in pedidos]
     grafico_values = [(p.total or 0) for p in pedidos]
 
-    
-    faturamento_por_mes = defaultdict(float)
+    # Faturamento real agrupado por mês (pedidos Entregues com data_criacao)
+    meses_nomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+
+    faturamento_por_mes = {}
     for p in pedidos:
         if p.status == "Entregue" and p.data_criacao:
-            numero_mes = p.data_criacao.month
-            nome_mes = MESES_PT[numero_mes]
-            faturamento_por_mes[nome_mes] += p.total or 0
+            mes = meses_nomes[p.data_criacao.month - 1]
+            faturamento_por_mes[mes] = faturamento_por_mes.get(mes, 0) + (p.total or 0)
 
-    
-    meses_ordenados = sorted(
-        faturamento_por_mes.keys(),
-        key=lambda m: list(MESES_PT.values()).index(m)
-    )
-
-    faturamento_labels = meses_ordenados
-    faturamento_values = [round(faturamento_por_mes[m], 2) for m in meses_ordenados]
+    faturamento_labels = list(faturamento_por_mes.keys())
+    faturamento_values = list(faturamento_por_mes.values())
 
     return templates.TemplateResponse("pedidos.html", {
         "request": request,
@@ -61,6 +51,7 @@ def pagina_pedidos(request: Request, db: Session = Depends(get_db)):
         "total_pedidos": total_pedidos,
         "entregues": entregues,
         "pendentes": pendentes,
+        "em_transito": em_transito,
         "grafico_labels": grafico_labels,
         "grafico_values": grafico_values,
         "faturamento_labels": faturamento_labels,
@@ -135,7 +126,8 @@ def criar_pedido(
 def entregar(pedido_id: int, db: Session = Depends(get_db)):
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
 
-    if pedido and pedido.status != "Entregue" and pedido.status != "Cancelado":
+    
+    if pedido and pedido.status not in ("Entregue", "Cancelado"):
         pedido.status = "Entregue"
         db.commit()
 
@@ -146,7 +138,7 @@ def entregar(pedido_id: int, db: Session = Depends(get_db)):
 def cancelar(pedido_id: int, db: Session = Depends(get_db)):
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
 
-    if pedido and pedido.status != "Entregue" and pedido.status != "Cancelado":
+    if pedido and pedido.status not in ("Entregue", "Cancelado"):
         pedido.status = "Cancelado"
         db.commit()
 

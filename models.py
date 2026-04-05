@@ -30,5 +30,5 @@ class Pedido(Base):
     quantidade = Column(Integer, nullable=False)
     total = Column(Float, nullable=False)
     status = Column(String, nullable=False)
-    data_criacao = Column(DateTime, default=datetime.utcnow)
+    data_criacao = Column(DateTime, default=datetime.now)
     
