@@ -388,6 +388,17 @@
             margin-right: 8px;
         }
 
+        .grafico-box {
+            background: rgba(253, 253, 255, 0.2);
+            color: white;
+        }
+
+        footer {
+            display: flex;
+            justify-content: center;
+            color: white;
+        }
+
         @media (max-width: 1000px) {
             .cards-forms {
                 grid-template-columns: 1fr;
@@ -510,10 +521,12 @@
                         <input type="text" name="nome" placeholder="Digite o nome do produto" required>
 
                         <label>Estoque</label>
-                        <input type="number" name="estoque" min="0" placeholder="Digite a quantidade em estoque" required>
+                        <input type="number" name="estoque" min="0" placeholder="Digite a quantidade em estoque"
+                            required>
 
                         <label>Valor</label>
-                        <input type="number" step="0.01" name="valor" min="0.01" placeholder="Digite o valor do produto" required>
+                        <input type="number" step="0.01" name="valor" min="0.01" placeholder="Digite o valor do produto"
+                            required>
 
                         <button class="btn" type="submit">Cadastrar Produto</button>
                     </form>
@@ -530,7 +543,8 @@
                             <option value="">Selecione</option>
                             {% for produto in produtos %}
                             <option value="{{ produto.id }}">
-                                {{ produto.nome }} - Estoque: {{ produto.estoque }} - R$ {{ "%.2f"|format(produto.valor) }}
+                                {{ produto.nome }} - Estoque: {{ produto.estoque }} - R$ {{ "%.2f"|format(produto.valor)
+                                }}
                             </option>
                             {% endfor %}
                         </select>
@@ -607,42 +621,11 @@
                 <canvas id="graficoFaturamento"></canvas>
             </div>
         </div>
-
-        <div class="bloco">
-            <h2>Gráfico de Pedidos por Cliente</h2>
-            <div class="grafico-box">
-                <canvas id="graficoPedidos"></canvas>
-            </div>
-        </div>
     </section>
 
-    <script>
-        const labels = {{ grafico_labels | tojson }};
-        const values = {{ grafico_values | tojson }};
-
-        const ctx = document.getElementById('graficoPedidos');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Total por cliente',
-                    data: values,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
+    <footer>
+        <p>© 2026 Rtech ERP - Todos os direitos reservados</p>
+    </footer>
 
     <script>
         const labelsFaturamento = {{ faturamento_labels | tojson }};
@@ -659,15 +642,33 @@
                     data: valuesFaturamento,
                     borderWidth: 2,
                     tension: 0.3,
-                    fill: false
+                    fill: false,
+                    borderColor: '#00ffff' // cor da linha
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#ffffff'
+                        }
+                    }
+                },
+
                 scales: {
+                    x: {
+                        ticks: {
+                            color: '#ffffff'
+                        }
+                    },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#ffffff'
+                        }
                     }
                 }
             }
