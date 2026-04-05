@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, DateTime
+from datetime import datetime
 from database import Base
 
 
@@ -29,4 +30,5 @@ class Pedido(Base):
     quantidade = Column(Integer, nullable=False)
     total = Column(Float, nullable=False)
     status = Column(String, nullable=False)
+    data_criacao = Column(DateTime, default=datetime.utcnow)
     

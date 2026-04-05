@@ -2,6 +2,7 @@
 _pychache_/
 *.pyc
 pedidos.db
+popular_db.py
 .env
 .idea/
 .vscode/

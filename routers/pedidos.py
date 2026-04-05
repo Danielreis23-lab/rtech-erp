@@ -2,11 +2,18 @@ from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from collections import defaultdict
 from deps import get_db
 import models
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
 templates = Jinja2Templates(directory="templates")
+
+MESES_PT = {
+    1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
+    5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
+    9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+}
 
 
 @router.get("/")
@@ -28,8 +35,22 @@ def pagina_pedidos(request: Request, db: Session = Depends(get_db)):
     grafico_labels = [p.cliente for p in pedidos]
     grafico_values = [(p.total or 0) for p in pedidos]
 
-    faturamento_labels = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho']
-    faturamento_values = [5000, 7000, 6000, 8000, 7500, 9000]
+    
+    faturamento_por_mes = defaultdict(float)
+    for p in pedidos:
+        if p.status == "Entregue" and p.data_criacao:
+            numero_mes = p.data_criacao.month
+            nome_mes = MESES_PT[numero_mes]
+            faturamento_por_mes[nome_mes] += p.total or 0
+
+    
+    meses_ordenados = sorted(
+        faturamento_por_mes.keys(),
+        key=lambda m: list(MESES_PT.values()).index(m)
+    )
+
+    faturamento_labels = meses_ordenados
+    faturamento_values = [round(faturamento_por_mes[m], 2) for m in meses_ordenados]
 
     return templates.TemplateResponse("pedidos.html", {
         "request": request,
@@ -114,19 +135,19 @@ def criar_pedido(
 def entregar(pedido_id: int, db: Session = Depends(get_db)):
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
 
-    if pedido and pedido.status != "Entregue" or pedido.status == "Cancelado":
+    if pedido and pedido.status != "Entregue" and pedido.status != "Cancelado":
         pedido.status = "Entregue"
         db.commit()
 
     return RedirectResponse("/pedidos/", status_code=303)
 
+
 @router.post("/cancelar/{pedido_id}")
-def cancelar(pedido_id: int, db: Session = Depends(get_db)):    
+def cancelar(pedido_id: int, db: Session = Depends(get_db)):
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
 
-    if pedido and pedido.status != "Entregue" and pedido.status != "Cancelado": # se o pedido não estiver entregue ou cancelado, ele pode ser cancelado
+    if pedido and pedido.status != "Entregue" and pedido.status != "Cancelado":
         pedido.status = "Cancelado"
         db.commit()
 
     return RedirectResponse("/pedidos/", status_code=303)
-
